@@ -1,6 +1,10 @@
-#include <IL/il.h>
-#include <GL/glut.h>
+#include <unistd.h>
+#include <stdio.h>
+#include <glut.h>
+#include <il.h>
 
+#define VERSION 1
+#define USAGE "vin <Picture>\n"
 
 #define DEFAULT_WIDTH  640
 #define DEFAULT_HEIGHT 480
@@ -34,15 +38,14 @@ void Reshape(GLsizei newwidth, GLsizei newheight)
   glutPostRedisplay();
 }
 
-  
-void Init(int w, int h) 
+void Init()
 {
-  glViewport(0, 0, w, h);
+  glViewport(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
   glEnable(GL_TEXTURE_2D);
  
   glMatrixMode(GL_PROJECTION);
   glLoadIdentity();
-  glOrtho(0.0, w, h, 0.0, 0.0, 100.0);
+  glOrtho(0.0, DEFAULT_WIDTH, DEFAULT_HEIGHT, 0.0, 0.0, 100.0);
 
   glMatrixMode(GL_MODELVIEW);
 
@@ -74,8 +77,19 @@ int main(int argc, char** argv)
   GLuint texid;
   int    image;
 
-  if (argc < 1) return -1;
-
+  int opt;
+  while (opt = getopt(argc, argv, ":if:lrx") != -1)
+    {
+      switch (opt)
+	{
+	case 'h': goto Usage; break;
+	case 'v': goto Version; break;
+	default: goto Unknown_Option;
+	}
+    }
+  if      (argv[1] == NULL)            goto Unknown_Option;
+  else if (access(argv[1], F_OK) != 0) goto File_not_Found;
+  
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -83,7 +97,7 @@ int main(int argc, char** argv)
   glutCreateWindow(title);
   glutDisplayFunc(Display);
   glutReshapeFunc(Reshape);
-  Init(DEFAULT_WIDTH, DEFAULT_HEIGHT);
+  Init();
 
   if (ilGetInteger(IL_VERSION_NUM) < IL_VERSION)
     {
@@ -113,4 +127,20 @@ int main(int argc, char** argv)
   glDeleteTextures(1, &texid);
 
   return 0;
+
+ Usage:
+  printf("Usage: "USAGE);
+  return 0;
+
+ Version:
+  printf("Version: %d\n", VERSION);
+  return 0;
+  
+ File_not_Found:
+  printf("Error: %s not found or is write-protected\n", argv[1]);
+  return -1;
+  
+ Unknown_Option:
+  printf("Bad Usage\n");
+  goto Usage;
 } 

@@ -1,5 +1,5 @@
 CXX        = gcc
-CFLAGS     = -g
+CFLAGS     = -g -I/usr/include/GL -I/usr/include/X11 -I/usr/include/IL
 LINKERLIBS = -lIL -lGL -lGLU -lglut
 OBJS       = src/vin.o
 OUT        = vin
