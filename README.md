@@ -16,3 +16,10 @@ To build simply type:
 
 To install simply type:
 ```make install```
+
+# Usage
+```
+USAGE: vin <Picture>
+        -h      Prints this message
+        -v      Print version
+```
