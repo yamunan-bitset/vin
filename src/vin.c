@@ -2,9 +2,10 @@
 #include <stdio.h>
 #include <glut.h>
 #include <il.h>
+#include <string.h>
 
 #define VERSION 1
-#define USAGE "vin <Picture>\n"
+#define USAGE "vin <Picture>\n\t-h\tPrints this message\n\t-v\tPrint version\n"
 
 #define DEFAULT_WIDTH  640
 #define DEFAULT_HEIGHT 480
@@ -77,19 +78,10 @@ int main(int argc, char** argv)
   GLuint texid;
   int    image;
 
-  int opt;
-  while (opt = getopt(argc, argv, ":if:lrx") != -1)
-    {
-      switch (opt)
-	{
-	case 'h': goto Usage; break;
-	case 'v': goto Version; break;
-	default: goto Unknown_Option;
-	}
-    }
-  if      (argv[1] == NULL)            goto Unknown_Option;
-  else if (access(argv[1], F_OK) != 0) goto File_not_Found;
-  
+  if (argc != 2) { printf("USAGE: "USAGE); return 0; }
+  if (strcmp(argv[1], "-h") == 0) { printf("USAGE: "USAGE); return 0; }
+  if (strcmp(argv[1], "-v") == 0) { printf("Version: %d\n", VERSION); return 0; }
+
   glutInit(&argc, argv);
   glutInitDisplayMode(GLUT_DOUBLE);
   glutInitWindowSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
@@ -127,20 +119,4 @@ int main(int argc, char** argv)
   glDeleteTextures(1, &texid);
 
   return 0;
-
- Usage:
-  printf("Usage: "USAGE);
-  return 0;
-
- Version:
-  printf("Version: %d\n", VERSION);
-  return 0;
-  
- File_not_Found:
-  printf("Error: %s not found or is write-protected\n", argv[1]);
-  return -1;
-  
- Unknown_Option:
-  printf("Bad Usage\n");
-  goto Usage;
 } 
